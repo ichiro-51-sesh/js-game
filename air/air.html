@@ -1,0 +1,261 @@
+<html><head><title>air</title>
+<script language="javascript">
+<!--
+var brver;	// ブラウザのバージョン
+var NN6;	// NN6.0以上なら true
+var IE5;	// IE5.0以上なら true
+var speedx;
+var speedy;
+var racketx;			// ラケットのＸ座標
+var rackety;			// ラケットのＹ座標
+var racketbx;
+var racketby;
+var racx;
+var racy;
+var disx;
+var disy;
+var bax;
+var bay;
+var a = 0.01;
+var endFlag = 0;
+brver = eval(0 + navigator.appVersion.charAt(0));    
+NN6   = (brver >= 5 && navigator.appName=="Netscape");           
+IE5   = (brver >= 4 && navigator.userAgent.indexOf("MSIE")!=-1);  
+
+function lyrGetLeft( lyr )
+{
+  if ( NN6 ) {
+    return( parseInt( document.getElementById( lyr ).style.left ) );
+  }
+  if ( IE5 ) {
+    return( parseInt( document.getElementById( lyr ).style.pixelLeft ) );
+  }
+  return( 0 );
+}
+// 上
+function lyrGetTop( lyr )
+{
+  if ( NN6 ) {
+    return( parseInt( document.getElementById( lyr ).style.top ) );
+  }
+  if ( IE5 ) {
+    return( parseInt( document.getElementById( lyr ).style.pixelTop ) );
+  }
+  return( 0 );
+}
+
+//--------------------------------------------------
+// レイヤーの位置指定
+//	lyr = レイヤー名
+//	(x,y) = 位置
+//--------------------------------------------------
+function lyrSetPos( lyr , x , y ) {
+  if ( NN6 ) {
+    document.getElementById( lyr ).style.left = x;
+    document.getElementById( lyr ).style.top  = y;
+  }
+  if ( IE5 ) {
+    document.getElementById( lyr ).style.pixelLeft = x;
+    document.getElementById( lyr ).style.pixelTop  = y;
+  }
+}
+
+var ballx;	// ボールのＸ(左)座標
+var bally;	// ボールのＹ(上)座標
+
+//--------------------------------------------------
+// マウス座標変数
+//--------------------------------------------------
+var mousex;		// マウスＸ座標
+var mousey;		// マウスＹ座標
+
+//--------------------------------------------------
+// マウス座標取得コールバック関数
+//--------------------------------------------------
+function evMouseMove(e) {
+  if ( NN6 ) {
+    mousex = e.pageX;
+    mousey = e.pageY;
+  }
+  if ( IE5 ) {
+    mousex = document.body.scrollLeft + event.clientX;
+    mousey = document.body.scrollTop  + event.clientY;
+  }
+}
+
+function hitchkBlock( lyr ) {
+  return(    lyrGetLeft( lyr ) < ballx + 15
+          && ballx             < lyrGetLeft( lyr ) + 63
+          && lyrGetTop( lyr )  < bally + 15
+          && bally             < lyrGetTop( lyr ) + 15
+        );
+}
+
+function lyrSetVisibility( lyr , visf ) {
+  if ( visf ) {
+    document.getElementById( lyr ).style.visibility = "visible";
+  } else {
+    document.getElementById( lyr ).style.visibility = "hidden";
+  }
+}
+
+
+//------------------------------------------------
+// コールバック初期設定
+//------------------------------------------------
+var timerID=setTimeout("",1);
+
+//------------------------------------------------
+// コールバック関数
+//------------------------------------------------
+function gameCallBack() {
+  clearTimeout( timerID );	// タイマークリア
+
+  if ((speedy > 15)||(speedx > 15)) {
+    speedx = speedx - (speedx/20);
+    speedy = speedy - (speedy/20);
+  }
+  bax = ballx;
+  bay = bally;
+  ballx = ballx + speedx;
+  bally = bally + speedy;
+
+  document.onmousemove=evMouseMove; //マウスを動かすとevMouseMove()を起動
+  if ( NN6 ) document.captureEvents(Event.MOUSEMOVE);
+  if ( ballx < 224 ) {
+    speedx = -speedx;	// 左の壁
+    ballx = ballx + speedx;		// 突き抜けた分を戻す
+  }
+  if ( 536 < ballx ) {
+    speedx = -speedx;	// 右の壁
+    ballx = ballx + speedx;		// 突き抜けた分を戻す
+  }
+  if ( bally < 124 ) {
+    if ((293 < ballx)&&(ballx+16<481)) {
+      lyrSetVisibility("lyrball",false);
+      score.MYscore.value++;
+      if (score.MYscore.value >= 7) {
+        alert("あなたの勝ち！");
+        endFlag = 1;
+      }
+      return;
+    } else {    
+      speedy = -speedy;	// 上の壁
+      bally = bally + speedy;		// 突き抜けた分を戻す
+    }
+  }
+
+  racx = racketx;
+  racy = rackety;
+  racketx = mousex - 32;	
+  rackety = mousey;	
+  racketbx = ballx - 24;	
+  racketby = 130;	
+  if ( racketx < 224 ) 
+    racketx = 224;		// 左壁をはみ出さないように
+  if ( 488 < racketx ) 
+    racketx = 488;		// 右壁をはみ出さないように
+  if (rackety < 400)
+    rackety = 400;
+  if (576 < rackety)
+    rackety = 576;
+  if (racketbx < 224)
+    racketbx = 224;
+  if (488 < racketbx)
+    racketbx = 488;
+  if (racketby < 124)
+    racketby = 124;
+  if (300 < racketby)
+    racketby = 300;
+  disx = (racketx - racx)/3;
+  disy = (rackety - racy)/3;
+  if ( 576 < bally ) {
+    if ((293 < ballx)&&(ballx+16< 481)) {
+      lyrSetVisibility("lyrball",false);
+      score.COMscore.value++;
+      if (score.COMscore.value >= 7) {
+        alert("Game Over!");
+        endFlag = 1;
+      }
+      return;
+    } else {
+    speedy = -speedy;
+    bally = bally + speedy;
+    }
+  }
+  if (hitchkBlock("lyrracket")) {
+    speedx = (speedx/2) + disx;
+    speedy = -speedy + disy;
+    ballx = ballx + speedx;
+    bally = bally + 2*speedy;
+  }
+  if (hitchkBlock("lyrracketb")) {
+    speedx = speedx + disx;
+    speedy = -speedy + disy;
+    ballx = ballx + speedx;
+    bally = bally + 2*speedy;
+  }
+  if ((ballx+16 > racketx)&&(racketx+64 > ballx)&&(bay+16 < rackety)
+     &&(bally > rackety+16))
+  {
+    speedx = (speedx/2) + disx;
+    speedy = -speedy + disy;
+    ballx = ballx + speedx;
+    bally = bally + 2*speedy;
+  }
+  if ((ballx+16 > racketx)&&(racketx+64 > ballx)&&(bally+16 < racy)
+     &&(bally > rackety+16))
+  {
+    speedx = (speedx/2) + disx;
+    speedy = -speedy + disy;
+    ballx = ballx + speedx;
+    bally = bally + 2*speedy;
+  }
+  lyrSetPos("lyrball",ballx,bally);
+  lyrSetPos("lyrracket",racketx,rackety);
+  lyrSetPos("lyrracketb",racketbx,racketby);
+  timerID = setTimeout( "gameCallBack()" , 30 );
+}
+function gameStart() {
+  if (!endFlag) {
+    lyrSetPos("lyrball",280,300);
+    ballx = lyrGetLeft( "lyrball" );	// ballx にレイヤーのＸ座標を代入
+    bally = lyrGetTop( "lyrball" );		// bally にレイヤーのＹ座標を代入
+    lyrSetVisibility("lyrball",true);
+    speedx = 4;
+    speedy = 4;
+    gameCallBack();
+  } else {
+    alert("終わりです！");
+    return;
+  }
+}
+//-->
+</script>
+</head>
+
+<body bgcolor="white">
+<div id=lyrcort style="position:absolute; left:216px;top:116px;">
+<img src=aircort.bmp><br><br>
+<a href="JavaScript:gameStart()">［スタート］</a>
+</div>
+<div id=lyrball style="position:absolute; left:280px;top:300px;">
+<img src=ball.bmp>
+</div>
+<div id=lyrracket style="position:absolute; left:355px;top:550px;">
+<img src=bb03.gif>
+</div>
+<div id=lyrracketb style="position:absolute; left:355px;top:150px;">
+<img src=bb03b.gif>
+</div>
+<br><br><br><br><br>
+<h2>　ステージ１</h2>
+<h3><font color="red">7点</font>先取したほうの勝ち！</h3>
+<form name="score">
+<table>
+<tr><td align="center" width="100">COM</td><td><input type="text" size=1 name="COMscore" value="0"></td></tr>
+<tr><td align="center" width="100">あなた</td><td><input type="text" size=1 name="MYscore" value="0"></td></tr>
+</table>
+</form>
+</body>
+</html>
