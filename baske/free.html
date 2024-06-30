@@ -1,0 +1,318 @@
+<html><head><title>ft</title>
+  <script language=javascript>
+  <!--
+  var brver;	// ブラウザのバージョン
+  var NN6;	// NN6.0以上なら true
+  var IE5;	// IE5.0以上なら true
+  var boadx;
+  var boady;
+  var ballx;
+  var ball;
+  var dirx;
+  var diry;
+  var size;
+  var sizeflg = 0;
+  var dis = 0;
+  var cubeflg = 0;
+  var reflag = 0;
+  var disx = 0;
+  var hide = 0;
+  var state = "no";
+  
+  brver = eval(0 + navigator.appVersion.charAt(0));    
+  NN6   = (brver >= 5 && navigator.appName=="Netscape");           
+  IE5   = (brver >= 4 && navigator.userAgent.indexOf("MSIE")!=-1);  
+  
+  
+  //--------------------------------------------------
+  // レイヤーの座標取得
+  //	lyr = レイヤー名
+  //--------------------------------------------------
+  // 左
+  function lyrGetLeft( lyr )
+  {
+    if ( NN6 ) {
+      return( parseInt( document.getElementById( lyr ).style.left ) );
+    }
+    if ( IE5 ) {
+      return( parseInt( document.getElementById( lyr ).style.pixelLeft ) );
+    }
+    return( 0 );
+  }
+  // 上
+  function lyrGetTop( lyr )
+  {
+    if ( NN6 ) {
+      return( parseInt( document.getElementById( lyr ).style.top ) );
+    }
+    if ( IE5 ) {
+      return( parseInt( document.getElementById( lyr ).style.pixelTop ) );
+    }
+    return( 0 );
+  }
+  
+  function lyrSetPos( lyr , x , y ) {
+    if ( NN6 ) {
+      document.getElementById( lyr ).style.left = x;
+      document.getElementById( lyr ).style.top  = y;
+    }
+    if ( IE5 ) {
+      document.getElementById( lyr ).style.pixelLeft = x;
+      document.getElementById( lyr ).style.pixelTop  = y;
+    }
+  }
+  
+  var timerID=setTimeout("",1);
+  
+  function gamecallBack() {
+  //  clearTimeout( timerID );	// タイマークリア
+  
+    diry = diry + 0.4;
+    ballx = ballx + dirx;
+    bally = bally + diry;
+  
+    if(bally > 500) {
+      ballx = ballx - dirx;
+      bally = bally - diry;
+      if(state == "in") {
+        document.fo.point.value++;
+        clearTimeout(timerID);
+        cubeflg = 0;
+        cubestart();
+        return;
+      }
+      if(state == "out") {
+        clearTimeout(timerID);
+        location.href = "../cgi-bin/gallnum.cgi?" + document.fo.point.value;
+        return;
+      }
+    }
+    if((diry <= 5)&&!sizeflg) {
+      size = size - 0.2;
+    }
+    if(diry > 5) {
+      sizeflg = 1;
+    }
+    if((diry > 0)&&(lyrGetTop("lyrball")+45 >= 135)&&(lyrGetTop("lyrball") < 140)) {
+      if((lyrGetLeft("lyrball") >= 277)&&(lyrGetLeft("lyrball") < 280)) {
+        dirx = 1;
+        diry = 4;
+        document.getElementById("lyrgall").style.display="block";
+        state = "in";
+      }
+      if((lyrGetLeft("lyrball") >= 267)&&(lyrGetLeft("lyrball") < 277)) {
+        dirx = 4;
+        diry = 4;
+        document.getElementById("lyrgall").style.display="block";
+        state = "in";
+      }
+      if((lyrGetLeft("lyrball") >= 255)&&(lyrGetLeft("lyrball") < 267)) {
+        dirx = 5;
+        diry = -5;
+        state = "out";
+      }
+      if((lyrGetLeft("lyrball") >= 250)&&(lyrGetLeft("lyrball") < 255)) {
+        dirx = 1;
+        diry = -5;
+        state = "out";
+      }
+      if((lyrGetLeft("lyrball") >= 245)&&(lyrGetLeft("lyrball") < 250)) {
+        diry = -5;
+      }
+      if((lyrGetLeft("lyrball") >=240)&&(lyrGetLeft("lyrball") < 245)) {
+        dirx = -5;
+        diry = -1;
+        state = "out";
+      }
+      if((lyrGetLeft("lyrball") >= 280)&&(lyrGetLeft("lyrball") < 317)&&!hide) {
+        document.getElementById("lyrgall").style.display="block";
+        state = "in";
+      }
+      if((lyrGetLeft("lyrball") >= 317)&&(lyrGetLeft("lyrball") < 319)) {
+        dirx = -1;
+        diry = 4;
+        document.getElementById("lyrgall").style.display="block";
+        state = "in";
+      }
+      if((lyrGetLeft("lyrball") >= 319)&&(lyrGetLeft("lyrball") < 327)) {
+        dirx = -4;
+        diry = 4;
+        document.getElementById("lyrgall").style.display="block";
+        state = "in";
+      }
+      if((lyrGetLeft("lyrball") >= 327)&&(lyrGetLeft("lyrball") < 332)) {
+        dirx = -5;
+        diry = -5;
+        state = "out";
+      }
+      if((lyrGetLeft("lyrball") >= 332)&&(lyrGetLeft("lyrball") < 334)) {
+        dirx = -1;
+        diry = -5;
+        state = "out";
+      }
+      if((lyrGetLeft("lyrball") >= 337)&&(lyrGetLeft("lyrball") < 346)) {
+        diry = -5;
+        state = "out";
+      }
+      if((lyrGetLeft("lyrball") >=346)&&(lyrGetLeft("lyrball") < 354)) {
+        dirx = 5;
+        diry = -1;
+        state = "out";
+      }
+  
+      if((disx >= 1)&&(disx < 1.4)) {
+        document.getElementById("lyrgall").style.display="none";
+        hide = 1;
+        state = "out";      
+      }
+      if((disx >= 0.7)&&(disx < 1)) {
+        document.getElementById("lyrgall").style.display="none";
+        hide = 1;        
+        if(lyrGetTop("lyrball")+45 >= 140) {
+          diry = -2;
+          disx = 0;
+          state = "out";
+        }
+      }
+      if((disx >= 0.3)&&(disx < 0.7)) {
+        document.getElementById("lyrgall").style.display="none";
+        hide = 1;        
+        if(lyrGetTop("lyrball")+45 >= 130) {
+          diry = -4;
+          disx = 0;
+          state = "out";
+        }
+      }
+      if((disx >= -0.7)&&(disx <= -0.3)) {
+        diry = -3
+        disx = 0;
+        document.getElementById("lyrgall").style.display="none";
+        hide = 1;
+        state = "out";
+      }
+      if((disx >= -0.9)&&(disx < -0.7)) {
+        diry = -4;
+        disx = 0;
+        state = "in";
+      }
+      if(disx <= -0.9) {
+        diry = -5;
+        disx = 0;
+        document.getElementById("lyrgall").style.display="none";
+        hide = 1;
+        state = "out";
+      }
+    }
+    lyrSetPos("lyrball",ballx,bally);
+    document.bl.width = size;
+    document.bl.height = size;
+  
+    timerID = setTimeout("gamecallBack()",10);
+  }
+  
+  function gameStart() {
+  
+    ballx = lyrGetLeft("lyrball");
+    bally = lyrGetTop("lyrball");
+    diry = -19;
+    size = document.bl.width;
+    sizeflg = 0;
+    boadx = lyrGetLeft("lyrboad");
+    boady = lyrGetTop( "lyrboad" );
+    document.bl.src="ball.GIF";
+    gamecallBack();
+  }
+  
+  function stop() {
+    if(cubeflg == 1) {
+      cubeflg = 2;
+      dirx = (lyrGetLeft("lyraka") - 94) * 0.03;
+    }
+    else if(cubeflg == 2) {
+      disx = (lyrGetTop("lyrao") - 92) * 0.03;
+      cubeflg = 3;
+      clearTimeout(timerID);
+      gameStart();
+    }
+  }
+  
+  function callBack() {
+  
+    if(cubeflg == 1) {
+      if(!reflag&&(aka >= 138)) {
+        dis = -4;
+        reflag = 1;
+      }
+      if(reflag&&(aka <= 50)) {
+        dis = 4;
+        reflag = 0;
+      }
+      aka = aka + dis;
+    }
+    else if(cubeflg == 2) {
+      if(!reflag&&(ao >= 130)) {
+        dis = -4;
+        reflag = 1;
+      }
+      if(reflag&&(ao <= 48)) {
+        dis = 4;
+        reflag = 0;
+      }
+      ao = ao + dis;
+    }
+    lyrSetPos("lyraka",aka,92);
+    lyrSetPos("lyrao",94,ao);
+    timerID = setTimeout("callBack()",10);
+  }
+  
+  function cubestart() {
+    
+    if(cubeflg == 0) {
+      aka = 50;
+      ao = 48;
+      lyrSetPos("lyraka",aka,92);
+      lyrSetPos("lyrao",94,ao);  
+      document.getElementById("lyrgall").style.display="none";
+      document.getElementById("lyrball").style.top=500;
+      document.getElementById("lyrball").style.left=297;
+      document.bl.src = "ball1.GIF";  
+      document.bl.width = 57;
+      document.bl.height = 57;
+      cubeflg = 1;
+      dis = 4;
+  
+      callBack();
+    }
+  }
+  //-->
+  </script>
+  </head>
+  <body bgcolor=#ccffff>
+  <form name=fo>
+  <input type=text size=5 name=point value=0 style="text-align:right;"> 本連続成功！！
+  </form>
+  <div id="lyrboad" style="position:absolute; top:10px; left:200px;">
+  <img src=boad.GIF width=232 height=193>
+  </div>
+  <div id="lyrball" style="position:absolute; top:500px; left:297px;">
+  <img name=bl src=ball1.GIF width=57 height=57>
+  </div>
+  <div id="lyrgall" style="display: none; position:absolute; top:135px; left:278px;">
+  <img name=gl src=gall.GIF width=81 height=68>
+  </div>
+  <div id="lyrcube" style="position:absolute; top:50px; left:50px;">
+  <img src=cube.GIF>
+  <p>
+  <form>
+  <input type=button value=START onclick=cubestart()>
+  <input type=button value=STOP onclick=stop()>
+  </form>
+  </div>
+  <div id="lyraka" style="position:absolute; top:92px; left:50px;">
+  <img src=aka.GIF>
+  </div>
+  <div id="lyrao" style="position:absolute; top:48px; left:94px;">
+  <img src=ao.GIF>
+  </div>
+  </body>
+  </html>

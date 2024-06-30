@@ -1,0 +1,373 @@
+<html><head><title>ufo</title>
+  <script language=javascript>
+  <!--
+  var brver;	// ブラウザのバージョン
+  var NN6;	// NN6.0以上なら true
+  var IE5;	// IE5.0以上なら true
+  var ufox;
+  var ufoy;
+  var cranex;
+  var craney;
+  var shadex;
+  var shadey;
+  var itemx = new Array(4);
+  var itemy = new Array(4);
+  var deiy = new Array(4);
+  var dirx;
+  var diry;
+  var dx;
+  var dy;
+  var idx = new Array(4);
+  var idy = new Array(4);
+  var i;
+  var j;
+  var flag = 0;
+  var rflag = 0;
+  var uflag = 0;
+  var swflag = 0;
+  var ef = new Array(4);
+  var user;
+  var money;
+  var money2;
+  var item = -1;
+  var finflg = 0;
+  
+  for(num=0;num<=4;num++)
+    ef[num] = 0;
+  
+  brver = eval(0 + navigator.appVersion.charAt(0));    
+  NN6   = (brver >= 5 && navigator.appName=="Netscape");           
+  IE5   = (brver >= 4 && navigator.userAgent.indexOf("MSIE")!=-1);  
+  
+  
+  //--------------------------------------------------
+  // レイヤーの座標取得
+  //	lyr = レイヤー名
+  //--------------------------------------------------
+  // 左
+  function lyrGetLeft( lyr )
+  {
+    if ( NN6 ) {
+      return( parseInt( document.getElementById( lyr ).style.left ) );
+    }
+    if ( IE5 ) {
+      return( parseInt( document.getElementById( lyr ).style.pixelLeft ) );
+    }
+    return( 0 );
+  }
+  // 上
+  function lyrGetTop( lyr )
+  {
+    if ( NN6 ) {
+      return( parseInt( document.getElementById( lyr ).style.top ) );
+    }
+    if ( IE5 ) {
+      return( parseInt( document.getElementById( lyr ).style.pixelTop ) );
+    }
+    return( 0 );
+  }
+  
+  function lyrSetPos( lyr , x , y ) {
+    if ( NN6 ) {
+      document.getElementById( lyr ).style.left = x;
+      document.getElementById( lyr ).style.top  = y;
+    }
+    if ( IE5 ) {
+      document.getElementById( lyr ).style.pixelLeft = x;
+      document.getElementById( lyr ).style.pixelTop  = y;
+    }
+  }
+  
+  function up() {
+    if(!flag&&rflag) {
+      dirx = 0;
+      diry = -2;
+      dx = 0;
+      dy = -2;
+    }
+  }
+  function right() {
+    if(!flag&&!rflag) {
+      dirx = 4;
+      diry = 0;
+      dx = 4;
+      dy = 0;
+    }
+  }
+  function stop() {
+    if(!flag) {
+      dirx = 0;
+      diry = 0;
+      dx = 0;
+      dy = 0;
+      rflag = 1;
+    }
+  }
+  function fin() {
+    if(!flag&&rflag) {
+      dirx = 0;
+      diry = 0;
+      dx = 0;
+      dy = 0;
+      flag = 1;
+    }
+  }
+  
+  var timerID=setTimeout("",1);
+  
+  
+  function gamecallBack() {
+  //  clearTimeout( timerID );	// タイマークリア
+  
+    if(flag&&!uflag) {
+      if(i == 0) {
+        document.cr.src="crdwn.GIF";
+        i++;
+      }
+      else if(i == 20) {
+        diry = 2;
+      }
+      else {
+        i++;
+      }
+    }
+    cranex = cranex + dirx;
+    craney = craney + diry;
+    shadex = shadex + dx;
+    shadey = shadey + dy;
+    for(num=0;num<=4;num++) {
+      itemx[num] = itemx[num] + idx[num];
+      itemy[num] = itemy[num] + idy[num];
+    }
+    if(cranex+40 > lyrGetLeft("lyrufo")+350) {
+      cranex = cranex - dirx;
+      shadex = shadex - dx;
+    }
+    if(craney+40 < lyrGetTop("lyrufo")+20) {
+      craney = 80;
+      shadey = 223;
+      diry = 0;
+      dy = 0;
+    }  
+    if(craney+25 > lyrGetTop("lyrshade")) {
+      if(j == 20) {
+        document.cr.src = "crup.GIF";
+        j++;
+        for(num=0;num<=1;num++) {
+          if(shadex+27 == itemx[num]+23) {
+            if((shadey+3 >= itemy[num]+23)&&(shadey+3 <= itemy[num]+27)) {
+              idy[num] = 2;
+              ef[num] = 1;
+            }
+            if((shadey+3 >= itemy[num]+17)&&(shadey+3 <= itemy[num]+21)) {
+              idy[num] = 2;
+              ef[num] = 2;
+            }
+            if((shadey+3 >= itemy[num]+29)&&(shadey+3 <= itemy[num]+33)) {
+              idy[num] = 2;
+              ef[num] = 2;
+            }
+          }
+          if((shadex+27 == itemx[num]+19)||(shadex+27 == itemx[num]+27)) {
+            if((shadey+3 >= itemy[num]+17)&&(shadey+3 <= itemy[num]+33)) {
+              idy[num] = 2;
+              ef[num] = 2;
+            }
+          }
+          if((shadex+27 == itemx[num]+15)||(shadex+27 == itemx[num]+31)) {
+            if((shadey+3 >= itemy[num]+17)&&(shadey+3 <= itemy[num]+33)) {
+              idy[num] = 2;
+              ef[num] = 3;
+            }
+          }
+        }
+        for(num=2;num<=4;num++) {
+          if(shadex+27 == itemx[num]+19) {
+            if((shadey+3 >= itemy[num]+19)&&(shadey+3 <= itemy[num]+21)) {
+              idy[num] = 2;
+              ef[num] = 1;
+            }
+            if((shadey+3 >= itemy[num]+13)&&(shadey+3 <= itemy[num]+17)) {
+              idy[num] = 2;
+              ef[num] = 2;
+            }
+            if((shadey+3 >= itemy[num]+23)&&(shadey+3 <= itemy[num]+27)) {
+              idy[num] = 2;
+              ef[num] = 2;
+            }
+          }
+          if((shadex+27 == itemx[num]+15)||(shadex+27 == itemx[num]+23)) {
+            if((shadey+3 >= itemy[num]+13)&&(shadey+3 <= itemy[num]+27)) {
+              idy[num] = 2;
+              ef[num] = 2;
+            }
+          }
+          if((shadex+27 == itemx[num]+11)||(shadex+27 == itemx[num]+27)) {
+            if((shadey+3 >= itemy[num]+13)&&(shadey+3 <= itemy[num]+27)) {
+              idy[num] = 2;
+              ef[num] = 3;
+            }
+          }
+        }
+      }
+      else if(j >= 40) {
+        diry = -2;
+        for(num=0;num<=4;num++) {
+          if((ef[num] == 1)||(ef[num] == 2))
+            idy[num] = diry;
+          if(ef[num] == 4) {
+            itemy[num] = deiy[num];
+            idy[num] = 0;
+            ef[num] = 5;
+            uflag = 1;
+          }
+          if(ef[num] == 3) {
+            idy[num] = diry;
+            ef[num] = 4;
+          }
+        }
+        craney = craney + diry;
+        uflag = 1;
+        for(num=0;num<=4;num++) {
+          if(ef[num] == 4)
+            uflag = 0;
+        }
+        j++;
+      }
+      else  {
+        craney = craney - diry;
+        diry = 0;
+        for(num=0;num<=4;num++) {
+          if(ef[num] != 0)
+            idy[num] = diry;
+        }
+        j++;
+      }
+    }
+    if(uflag == 1) {
+      if((shadey - craney) >= 143) {
+        document.cr.src = "crane.GIF";
+        dirx = -(cranex - 125)/50;
+        diry = (175 - craney)/50;
+        dx = dirx;
+        dy = diry;
+        for(num=0;num<=4;num++) {
+          if(ef[num] == 1) {
+            idx[num] = dirx;
+            idy[num] = diry;
+          }
+          if(ef[num] == 2) {
+            idy[num] = 4;
+          }
+        }   
+        uflag = 2;
+      }
+    }
+    if(uflag == 2) {
+      if((cranex <= 125)&&(craney >= 175)) {
+        cranex = 125;
+        craney = 175;
+        shadex = 134;
+        shadey = 318
+        dirx = 0;
+        diry = 0;
+        dx = 0;
+        dy = 0;
+        for(num=0;num<=4;num++) {
+          if(ef[num] == 1) {
+            idx[num] = dirx;
+            idy[num] = diry;
+          }
+        }
+        uflag = 3;
+      }
+        for(num=0;num<=4;num++) {
+          if(ef[num] == 2)
+            if(itemy[num] >= deiy[num]) {
+              itemy[num] = deiy[num];
+              idy[num] = 0;
+            }
+        }
+    }
+    if(uflag == 3) {
+      document.cr.src = "crfin.GIF";
+        for(num=0;num<=4;num++) {
+          if(ef[num] == 1) {
+            idy[num] = 4;
+            item = num;
+          }
+        }
+      uflag = 4;
+    }
+    if(uflag == 4) {
+      for(num=0;num<=4;num++) {
+        if(itemy[num] >= 450) {
+          idy[num] = 0;
+          finflg = 1;
+        }
+      }
+      if((item == -1)||finflg) {
+        return;    
+      }
+    }
+  
+    lyrSetPos("lyrcrane",cranex,craney);
+    lyrSetPos("lyrshade",shadex,shadey);
+    lyrSetPos("lyritem",itemx[0],itemy[0]);
+  
+    timerID = setTimeout("gamecallBack()",50);
+  }
+  
+  function gameStart() {
+  
+    cranex = lyrGetLeft("lyrcrane");
+    craney = lyrGetTop("lyrcrane");
+    shadex = lyrGetLeft("lyrshade");
+    shadey = lyrGetTop("lyrshade");
+    itemx[0] = lyrGetLeft("lyritem");
+    itemy[0] = lyrGetTop("lyritem");
+    dirx = 0;
+    diry = 0;
+    dx = 0;
+    dy = 0;
+    for(num=0;num<=4;num++) {
+      deiy[num] = itemy[num];
+      idx[num] = 0;
+      idy[num] = 0;
+    }
+    i = 0;
+    j = 0;
+    ufox = lyrGetLeft("lyrufo");
+    ufoy = lyrGetTop( "lyrufo" );
+    gamecallBack();
+    ballBack();
+  }
+  //-->
+  </script>
+  </head>
+  
+  <body onload = gameStart();>
+  
+  <div id="lyrufo" style="position:absolute; top:100px; left:100px;">
+  <img src=ufo.GIF>
+  </div>
+  <div style="position:absolute; top:351px; left:355px;">
+  <img src=right.GIF onmousedown=right() onmouseup=stop()>
+  </div>
+  <div style="position:absolute; top:351px; left:410px;">
+  <img src=up.GIF onmousedown=up() onmouseup=fin()>
+  </div>
+  <div id="lyritem" style="position:absolute; top:260px; left:370px;">
+  <img src=item.GIF>
+  </div>
+  <div style="position:absolute; top:337px; left:123px;">
+  <img src=itemget.GIF>
+  </div>
+  <div id="lyrshade" style="position:absolute; top:318px; left:134px;">
+  <img src=shade.GIF>
+  </div>
+  <div id="lyrcrane" style="position:absolute; top:175px; left:125px;">
+  <img name=cr src=crane.GIF>
+  </div>
+  </body>
+  </html>
