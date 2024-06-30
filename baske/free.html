@@ -83,7 +83,9 @@
       }
       if(state == "out") {
         clearTimeout(timerID);
-        location.href = "../cgi-bin/gallnum.cgi?" + document.fo.point.value;
+        cubeflg = 0;
+        cubestart();
+        // location.href = "../cgi-bin/gallnum.cgi?" + document.fo.point.value;
         return;
       }
     }
