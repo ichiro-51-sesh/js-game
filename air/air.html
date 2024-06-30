@@ -1,261 +1,261 @@
 <html><head><title>air</title>
-<script language="javascript">
-<!--
-var brver;	// ƒuƒ‰ƒEƒU‚Ìƒo[ƒWƒ‡ƒ“
-var NN6;	// NN6.0ˆÈã‚È‚ç true
-var IE5;	// IE5.0ˆÈã‚È‚ç true
-var speedx;
-var speedy;
-var racketx;			// ƒ‰ƒPƒbƒg‚Ì‚wÀ•W
-var rackety;			// ƒ‰ƒPƒbƒg‚Ì‚xÀ•W
-var racketbx;
-var racketby;
-var racx;
-var racy;
-var disx;
-var disy;
-var bax;
-var bay;
-var a = 0.01;
-var endFlag = 0;
-brver = eval(0 + navigator.appVersion.charAt(0));    
-NN6   = (brver >= 5 && navigator.appName=="Netscape");           
-IE5   = (brver >= 4 && navigator.userAgent.indexOf("MSIE")!=-1);  
-
-function lyrGetLeft( lyr )
-{
-  if ( NN6 ) {
-    return( parseInt( document.getElementById( lyr ).style.left ) );
+  <script language="javascript">
+  <!--
+  var brver;	// ãƒ–ãƒ©ã‚¦ã‚¶ã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³
+  var NN6;	// NN6.0ä»¥ä¸Šãªã‚‰ true
+  var IE5;	// IE5.0ä»¥ä¸Šãªã‚‰ true
+  var speedx;
+  var speedy;
+  var racketx;			// ãƒ©ã‚±ãƒƒãƒˆã®ï¼¸åº§æ¨™
+  var rackety;			// ãƒ©ã‚±ãƒƒãƒˆã®ï¼¹åº§æ¨™
+  var racketbx;
+  var racketby;
+  var racx;
+  var racy;
+  var disx;
+  var disy;
+  var bax;
+  var bay;
+  var a = 0.01;
+  var endFlag = 0;
+  brver = eval(0 + navigator.appVersion.charAt(0));    
+  NN6   = (brver >= 5 && navigator.appName=="Netscape");           
+  IE5   = (brver >= 4 && navigator.userAgent.indexOf("MSIE")!=-1);  
+  
+  function lyrGetLeft( lyr )
+  {
+    if ( NN6 ) {
+      return( parseInt( document.getElementById( lyr ).style.left ) );
+    }
+    if ( IE5 ) {
+      return( parseInt( document.getElementById( lyr ).style.pixelLeft ) );
+    }
+    return( 0 );
   }
-  if ( IE5 ) {
-    return( parseInt( document.getElementById( lyr ).style.pixelLeft ) );
+  // ä¸Š
+  function lyrGetTop( lyr )
+  {
+    if ( NN6 ) {
+      return( parseInt( document.getElementById( lyr ).style.top ) );
+    }
+    if ( IE5 ) {
+      return( parseInt( document.getElementById( lyr ).style.pixelTop ) );
+    }
+    return( 0 );
   }
-  return( 0 );
-}
-// ã
-function lyrGetTop( lyr )
-{
-  if ( NN6 ) {
-    return( parseInt( document.getElementById( lyr ).style.top ) );
-  }
-  if ( IE5 ) {
-    return( parseInt( document.getElementById( lyr ).style.pixelTop ) );
-  }
-  return( 0 );
-}
-
-//--------------------------------------------------
-// ƒŒƒCƒ„[‚ÌˆÊ’uw’è
-//	lyr = ƒŒƒCƒ„[–¼
-//	(x,y) = ˆÊ’u
-//--------------------------------------------------
-function lyrSetPos( lyr , x , y ) {
-  if ( NN6 ) {
-    document.getElementById( lyr ).style.left = x;
-    document.getElementById( lyr ).style.top  = y;
-  }
-  if ( IE5 ) {
-    document.getElementById( lyr ).style.pixelLeft = x;
-    document.getElementById( lyr ).style.pixelTop  = y;
-  }
-}
-
-var ballx;	// ƒ{[ƒ‹‚Ì‚w(¶)À•W
-var bally;	// ƒ{[ƒ‹‚Ì‚x(ã)À•W
-
-//--------------------------------------------------
-// ƒ}ƒEƒXÀ•W•Ï”
-//--------------------------------------------------
-var mousex;		// ƒ}ƒEƒX‚wÀ•W
-var mousey;		// ƒ}ƒEƒX‚xÀ•W
-
-//--------------------------------------------------
-// ƒ}ƒEƒXÀ•Wæ“¾ƒR[ƒ‹ƒoƒbƒNŠÖ”
-//--------------------------------------------------
-function evMouseMove(e) {
-  if ( NN6 ) {
-    mousex = e.pageX;
-    mousey = e.pageY;
-  }
-  if ( IE5 ) {
-    mousex = document.body.scrollLeft + event.clientX;
-    mousey = document.body.scrollTop  + event.clientY;
-  }
-}
-
-function hitchkBlock( lyr ) {
-  return(    lyrGetLeft( lyr ) < ballx + 15
-          && ballx             < lyrGetLeft( lyr ) + 63
-          && lyrGetTop( lyr )  < bally + 15
-          && bally             < lyrGetTop( lyr ) + 15
-        );
-}
-
-function lyrSetVisibility( lyr , visf ) {
-  if ( visf ) {
-    document.getElementById( lyr ).style.visibility = "visible";
-  } else {
-    document.getElementById( lyr ).style.visibility = "hidden";
-  }
-}
-
-
-//------------------------------------------------
-// ƒR[ƒ‹ƒoƒbƒN‰Šúİ’è
-//------------------------------------------------
-var timerID=setTimeout("",1);
-
-//------------------------------------------------
-// ƒR[ƒ‹ƒoƒbƒNŠÖ”
-//------------------------------------------------
-function gameCallBack() {
-  clearTimeout( timerID );	// ƒ^ƒCƒ}[ƒNƒŠƒA
-
-  if ((speedy > 15)||(speedx > 15)) {
-    speedx = speedx - (speedx/20);
-    speedy = speedy - (speedy/20);
-  }
-  bax = ballx;
-  bay = bally;
-  ballx = ballx + speedx;
-  bally = bally + speedy;
-
-  document.onmousemove=evMouseMove; //ƒ}ƒEƒX‚ğ“®‚©‚·‚ÆevMouseMove()‚ğ‹N“®
-  if ( NN6 ) document.captureEvents(Event.MOUSEMOVE);
-  if ( ballx < 224 ) {
-    speedx = -speedx;	// ¶‚Ì•Ç
-    ballx = ballx + speedx;		// “Ë‚«”²‚¯‚½•ª‚ğ–ß‚·
-  }
-  if ( 536 < ballx ) {
-    speedx = -speedx;	// ‰E‚Ì•Ç
-    ballx = ballx + speedx;		// “Ë‚«”²‚¯‚½•ª‚ğ–ß‚·
-  }
-  if ( bally < 124 ) {
-    if ((293 < ballx)&&(ballx+16<481)) {
-      lyrSetVisibility("lyrball",false);
-      score.MYscore.value++;
-      if (score.MYscore.value >= 7) {
-        alert("‚ ‚È‚½‚ÌŸ‚¿I");
-        endFlag = 1;
-      }
-      return;
-    } else {    
-      speedy = -speedy;	// ã‚Ì•Ç
-      bally = bally + speedy;		// “Ë‚«”²‚¯‚½•ª‚ğ–ß‚·
+  
+  //--------------------------------------------------
+  // ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®æŒ‡å®š
+  //	lyr = ãƒ¬ã‚¤ãƒ¤ãƒ¼å
+  //	(x,y) = ä½ç½®
+  //--------------------------------------------------
+  function lyrSetPos( lyr , x , y ) {
+    if ( NN6 ) {
+      document.getElementById( lyr ).style.left = x;
+      document.getElementById( lyr ).style.top  = y;
+    }
+    if ( IE5 ) {
+      document.getElementById( lyr ).style.pixelLeft = x;
+      document.getElementById( lyr ).style.pixelTop  = y;
     }
   }
-
-  racx = racketx;
-  racy = rackety;
-  racketx = mousex - 32;	
-  rackety = mousey;	
-  racketbx = ballx - 24;	
-  racketby = 130;	
-  if ( racketx < 224 ) 
-    racketx = 224;		// ¶•Ç‚ğ‚Í‚İo‚³‚È‚¢‚æ‚¤‚É
-  if ( 488 < racketx ) 
-    racketx = 488;		// ‰E•Ç‚ğ‚Í‚İo‚³‚È‚¢‚æ‚¤‚É
-  if (rackety < 400)
-    rackety = 400;
-  if (576 < rackety)
-    rackety = 576;
-  if (racketbx < 224)
-    racketbx = 224;
-  if (488 < racketbx)
-    racketbx = 488;
-  if (racketby < 124)
-    racketby = 124;
-  if (300 < racketby)
-    racketby = 300;
-  disx = (racketx - racx)/3;
-  disy = (rackety - racy)/3;
-  if ( 576 < bally ) {
-    if ((293 < ballx)&&(ballx+16< 481)) {
-      lyrSetVisibility("lyrball",false);
-      score.COMscore.value++;
-      if (score.COMscore.value >= 7) {
-        alert("Game Over!");
-        endFlag = 1;
-      }
-      return;
+  
+  var ballx;	// ãƒœãƒ¼ãƒ«ã®ï¼¸(å·¦)åº§æ¨™
+  var bally;	// ãƒœãƒ¼ãƒ«ã®ï¼¹(ä¸Š)åº§æ¨™
+  
+  //--------------------------------------------------
+  // ãƒã‚¦ã‚¹åº§æ¨™å¤‰æ•°
+  //--------------------------------------------------
+  var mousex;		// ãƒã‚¦ã‚¹ï¼¸åº§æ¨™
+  var mousey;		// ãƒã‚¦ã‚¹ï¼¹åº§æ¨™
+  
+  //--------------------------------------------------
+  // ãƒã‚¦ã‚¹åº§æ¨™å–å¾—ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
+  //--------------------------------------------------
+  function evMouseMove(e) {
+    if ( NN6 ) {
+      mousex = e.pageX;
+      mousey = e.pageY;
+    }
+    if ( IE5 ) {
+      mousex = document.body.scrollLeft + event.clientX;
+      mousey = document.body.scrollTop  + event.clientY;
+    }
+  }
+  
+  function hitchkBlock( lyr ) {
+    return(    lyrGetLeft( lyr ) < ballx + 15
+            && ballx             < lyrGetLeft( lyr ) + 63
+            && lyrGetTop( lyr )  < bally + 15
+            && bally             < lyrGetTop( lyr ) + 15
+          );
+  }
+  
+  function lyrSetVisibility( lyr , visf ) {
+    if ( visf ) {
+      document.getElementById( lyr ).style.visibility = "visible";
     } else {
-    speedy = -speedy;
-    bally = bally + speedy;
+      document.getElementById( lyr ).style.visibility = "hidden";
     }
   }
-  if (hitchkBlock("lyrracket")) {
-    speedx = (speedx/2) + disx;
-    speedy = -speedy + disy;
+  
+  
+  //------------------------------------------------
+  // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯åˆæœŸè¨­å®š
+  //------------------------------------------------
+  var timerID=setTimeout("",1);
+  
+  //------------------------------------------------
+  // ã‚³ãƒ¼ãƒ«ãƒãƒƒã‚¯é–¢æ•°
+  //------------------------------------------------
+  function gameCallBack() {
+    clearTimeout( timerID );	// ã‚¿ã‚¤ãƒãƒ¼ã‚¯ãƒªã‚¢
+  
+    if ((speedy > 15)||(speedx > 15)) {
+      speedx = speedx - (speedx/20);
+      speedy = speedy - (speedy/20);
+    }
+    bax = ballx;
+    bay = bally;
     ballx = ballx + speedx;
-    bally = bally + 2*speedy;
+    bally = bally + speedy;
+  
+    document.onmousemove=evMouseMove; //ãƒã‚¦ã‚¹ã‚’å‹•ã‹ã™ã¨evMouseMove()ã‚’èµ·å‹•
+    if ( NN6 ) document.captureEvents(Event.MOUSEMOVE);
+    if ( ballx < 224 ) {
+      speedx = -speedx;	// å·¦ã®å£
+      ballx = ballx + speedx;		// çªãæŠœã‘ãŸåˆ†ã‚’æˆ»ã™
+    }
+    if ( 536 < ballx ) {
+      speedx = -speedx;	// å³ã®å£
+      ballx = ballx + speedx;		// çªãæŠœã‘ãŸåˆ†ã‚’æˆ»ã™
+    }
+    if ( bally < 124 ) {
+      if ((293 < ballx)&&(ballx+16<481)) {
+        lyrSetVisibility("lyrball",false);
+        score.MYscore.value++;
+        if (score.MYscore.value >= 7) {
+          alert("ã‚ãªãŸã®å‹ã¡ï¼");
+          endFlag = 1;
+        }
+        return;
+      } else {    
+        speedy = -speedy;	// ä¸Šã®å£
+        bally = bally + speedy;		// çªãæŠœã‘ãŸåˆ†ã‚’æˆ»ã™
+      }
+    }
+  
+    racx = racketx;
+    racy = rackety;
+    racketx = mousex - 32;	
+    rackety = mousey;	
+    racketbx = ballx - 24;	
+    racketby = 130;	
+    if ( racketx < 224 ) 
+      racketx = 224;		// å·¦å£ã‚’ã¯ã¿å‡ºã•ãªã„ã‚ˆã†ã«
+    if ( 488 < racketx ) 
+      racketx = 488;		// å³å£ã‚’ã¯ã¿å‡ºã•ãªã„ã‚ˆã†ã«
+    if (rackety < 400)
+      rackety = 400;
+    if (576 < rackety)
+      rackety = 576;
+    if (racketbx < 224)
+      racketbx = 224;
+    if (488 < racketbx)
+      racketbx = 488;
+    if (racketby < 124)
+      racketby = 124;
+    if (300 < racketby)
+      racketby = 300;
+    disx = (racketx - racx)/3;
+    disy = (rackety - racy)/3;
+    if ( 576 < bally ) {
+      if ((293 < ballx)&&(ballx+16< 481)) {
+        lyrSetVisibility("lyrball",false);
+        score.COMscore.value++;
+        if (score.COMscore.value >= 7) {
+          alert("Game Over!");
+          endFlag = 1;
+        }
+        return;
+      } else {
+      speedy = -speedy;
+      bally = bally + speedy;
+      }
+    }
+    if (hitchkBlock("lyrracket")) {
+      speedx = (speedx/2) + disx;
+      speedy = -speedy + disy;
+      ballx = ballx + speedx;
+      bally = bally + 2*speedy;
+    }
+    if (hitchkBlock("lyrracketb")) {
+      speedx = speedx + disx;
+      speedy = -speedy + disy;
+      ballx = ballx + speedx;
+      bally = bally + 2*speedy;
+    }
+    if ((ballx+16 > racketx)&&(racketx+64 > ballx)&&(bay+16 < rackety)
+       &&(bally > rackety+16))
+    {
+      speedx = (speedx/2) + disx;
+      speedy = -speedy + disy;
+      ballx = ballx + speedx;
+      bally = bally + 2*speedy;
+    }
+    if ((ballx+16 > racketx)&&(racketx+64 > ballx)&&(bally+16 < racy)
+       &&(bally > rackety+16))
+    {
+      speedx = (speedx/2) + disx;
+      speedy = -speedy + disy;
+      ballx = ballx + speedx;
+      bally = bally + 2*speedy;
+    }
+    lyrSetPos("lyrball",ballx,bally);
+    lyrSetPos("lyrracket",racketx,rackety);
+    lyrSetPos("lyrracketb",racketbx,racketby);
+    timerID = setTimeout( "gameCallBack()" , 30 );
   }
-  if (hitchkBlock("lyrracketb")) {
-    speedx = speedx + disx;
-    speedy = -speedy + disy;
-    ballx = ballx + speedx;
-    bally = bally + 2*speedy;
+  function gameStart() {
+    if (!endFlag) {
+      lyrSetPos("lyrball",280,300);
+      ballx = lyrGetLeft( "lyrball" );	// ballx ã«ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ï¼¸åº§æ¨™ã‚’ä»£å…¥
+      bally = lyrGetTop( "lyrball" );		// bally ã«ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ï¼¹åº§æ¨™ã‚’ä»£å…¥
+      lyrSetVisibility("lyrball",true);
+      speedx = 4;
+      speedy = 4;
+      gameCallBack();
+    } else {
+      alert("çµ‚ã‚ã‚Šã§ã™ï¼");
+      return;
+    }
   }
-  if ((ballx+16 > racketx)&&(racketx+64 > ballx)&&(bay+16 < rackety)
-     &&(bally > rackety+16))
-  {
-    speedx = (speedx/2) + disx;
-    speedy = -speedy + disy;
-    ballx = ballx + speedx;
-    bally = bally + 2*speedy;
-  }
-  if ((ballx+16 > racketx)&&(racketx+64 > ballx)&&(bally+16 < racy)
-     &&(bally > rackety+16))
-  {
-    speedx = (speedx/2) + disx;
-    speedy = -speedy + disy;
-    ballx = ballx + speedx;
-    bally = bally + 2*speedy;
-  }
-  lyrSetPos("lyrball",ballx,bally);
-  lyrSetPos("lyrracket",racketx,rackety);
-  lyrSetPos("lyrracketb",racketbx,racketby);
-  timerID = setTimeout( "gameCallBack()" , 30 );
-}
-function gameStart() {
-  if (!endFlag) {
-    lyrSetPos("lyrball",280,300);
-    ballx = lyrGetLeft( "lyrball" );	// ballx ‚ÉƒŒƒCƒ„[‚Ì‚wÀ•W‚ğ‘ã“ü
-    bally = lyrGetTop( "lyrball" );		// bally ‚ÉƒŒƒCƒ„[‚Ì‚xÀ•W‚ğ‘ã“ü
-    lyrSetVisibility("lyrball",true);
-    speedx = 4;
-    speedy = 4;
-    gameCallBack();
-  } else {
-    alert("I‚í‚è‚Å‚·I");
-    return;
-  }
-}
-//-->
-</script>
-</head>
-
-<body bgcolor="white">
-<div id=lyrcort style="position:absolute; left:216px;top:116px;">
-<img src=aircort.bmp><br><br>
-<a href="JavaScript:gameStart()">mƒXƒ^[ƒgn</a>
-</div>
-<div id=lyrball style="position:absolute; left:280px;top:300px;">
-<img src=ball.bmp>
-</div>
-<div id=lyrracket style="position:absolute; left:355px;top:550px;">
-<img src=bb03.gif>
-</div>
-<div id=lyrracketb style="position:absolute; left:355px;top:150px;">
-<img src=bb03b.gif>
-</div>
-<br><br><br><br><br>
-<h2>@ƒXƒe[ƒW‚P</h2>
-<h3><font color="red">7“_</font>ææ‚µ‚½‚Ù‚¤‚ÌŸ‚¿I</h3>
-<form name="score">
-<table>
-<tr><td align="center" width="100">COM</td><td><input type="text" size=1 name="COMscore" value="0"></td></tr>
-<tr><td align="center" width="100">‚ ‚È‚½</td><td><input type="text" size=1 name="MYscore" value="0"></td></tr>
-</table>
-</form>
-</body>
-</html>
+  //-->
+  </script>
+  </head>
+  
+  <body bgcolor="white">
+  <div id=lyrcort style="position:absolute; left:216px;top:116px;">
+  <img src=aircort.bmp><br><br>
+  <a href="JavaScript:gameStart()">ï¼»ã‚¹ã‚¿ãƒ¼ãƒˆï¼½</a>
+  </div>
+  <div id=lyrball style="position:absolute; left:280px;top:300px;">
+  <img src=ball.bmp>
+  </div>
+  <div id=lyrracket style="position:absolute; left:355px;top:550px;">
+  <img src=bb03.gif>
+  </div>
+  <div id=lyrracketb style="position:absolute; left:355px;top:150px;">
+  <img src=bb03b.gif>
+  </div>
+  <br><br><br><br><br>
+  <h2>ã€€ã‚¹ãƒ†ãƒ¼ã‚¸ï¼‘</h2>
+  <h3><font color="red">7ç‚¹</font>å…ˆå–ã—ãŸã»ã†ã®å‹ã¡ï¼</h3>
+  <form name="score">
+  <table>
+  <tr><td align="center" width="100">COM</td><td><input type="text" size=1 name="COMscore" value="0"></td></tr>
+  <tr><td align="center" width="100">ã‚ãªãŸ</td><td><input type="text" size=1 name="MYscore" value="0"></td></tr>
+  </table>
+  </form>
+  </body>
+  </html>
